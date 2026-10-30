@@ -21,12 +21,14 @@ export function slugify(s: unknown): string {
 	return String(s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "untitled";
 }
 
-// Static files from /public, fetched from our own origin. The visitor's Authorization header is passed on so
-// password-gated files (docs) still load through the edge gate.
+// Static files from /public, fetched from our own origin. The visitor's unlock cookie (or Authorization header)
+// is passed on so password-gated files (docs) still load through the edge gate.
 export async function asset(req: Request, path: string): Promise<Response> {
 	const headers: Record<string, string> = {};
 	const auth = req.headers.get("Authorization");
 	if (auth) headers.Authorization = auth;
+	const cookie = req.headers.get("Cookie");
+	if (cookie) headers.Cookie = cookie;
 	return fetch(new URL(path, req.url), { headers });
 }
 

@@ -6,7 +6,7 @@ version in `stud-studio/cloud`.
 - `public/`: the pages, served as static files.
 - `netlify/functions/api.mts`: briefs, saved references, the shortlist store, legal pages and docs. Data is kept in Netlify Blobs.
 - `netlify/functions/ai.mts`: the AI routes, Draft from references and Venture Scout. They call OpenAI `gpt-4.1-mini` through the Netlify AI Gateway, so no API key lives in this repo. Each visitor is rate-limited to 6 calls a minute.
-- `netlify/edge-functions/gate.ts`: a password gate for the studio. The user name is `studio`, and the password is the `STUDIO_PASSWORD` environment variable set in the Netlify UI. Pricing and the legal pages stay public. If `STUDIO_PASSWORD` is not set, the whole site is open.
+- `netlify/edge-functions/gate.ts`: a password gate for the studio. Locked pages show an unlock box; the right password (the `STUDIO_PASSWORD` environment variable set in the Netlify UI) unlocks that device for 30 days, and `/lock` locks it again. Basic auth with user `studio` also works. Pricing and the legal pages stay public. If `STUDIO_PASSWORD` is not set, the whole site is open.
 
 ## Settings (Netlify UI: Site configuration > Environment variables)
 
