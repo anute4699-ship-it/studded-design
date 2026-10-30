@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studded Design</title>
+<script src="/site.js"></script>
+<style>
+:root{--plate:#BDBEBA;--paper:#EFEFEC;--ink:#16191C;--soft:#5C6167;--yellow:#F5CD30;--orange:#F2861E;--green:#3E9B4F;--red:#C4281C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--plate:#24272B;--paper:#2E3237;--ink:#ECECE8;--soft:#A3A8AE}}
+:root[data-theme="dark"]{--plate:#24272B;--paper:#2E3237;--ink:#ECECE8;--soft:#A3A8AE}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--plate);
+  background-image:radial-gradient(circle at 50% 45%,rgba(255,255,255,.18) 0 22%,transparent 23%),radial-gradient(circle at 50% 58%,rgba(0,0,0,.1) 0 24%,transparent 25%);background-size:30px 30px}
+main{max-width:860px;margin:0 auto;padding:40px 16px}
+h1{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:clamp(44px,9vw,76px);line-height:.85;margin:0 0 6px;text-transform:uppercase}
+p.sub{font-family:'DM Mono',monospace;font-size:12px;color:var(--soft);margin:0 0 28px}
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+a.app{display:block;text-decoration:none;color:inherit;background:var(--paper);border:2px solid var(--ink);box-shadow:5px 5px 0 rgba(22,25,28,.25);padding:20px;transition:transform .12s}
+a.app:hover{transform:translate(-2px,-2px)}
+a.app b{font-family:'Big Shoulders Display',sans-serif;font-size:32px;text-transform:uppercase;display:block;line-height:1}
+a.app span{display:block;margin-top:8px;color:var(--soft)}
+a.app i{display:inline-block;font-style:normal;font-family:'DM Mono',monospace;font-size:11px;background:var(--yellow);color:#16191C;padding:2px 8px;margin-bottom:10px}
+#h{font-family:'DM Mono',monospace;font-size:12px;margin-top:26px}
+.ok{color:var(--green)}.bad{color:var(--red)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Studded Design</h1>
+  <p class="sub">Studded models and Roblox game-idea audits</p>
+  <div class="apps">
+    <a class="app" href="/docs"><i>REFERENCES</i><b>Master Docs</b><span>Order a studded model in 5 easy steps: pick a type, add references, review, save.</span></a>
+    <a class="app" href="/scout"><i>IDEAS</i><b>Venture Scout</b><span>Get AI feedback on a Roblox game idea, with a live check for similar games on roblox.com.</span></a>
+  </div>
+  <div id="h">Checking AI…</div>
+</main>
+<script>
+fetch('/api/health').then(function(r){return r.json();}).then(function(h){
+  document.getElementById('h').innerHTML=h.ai?'<span class="ok">● AI online</span> · '+h.model
+    :'<span class="bad">● AI offline</span>';
+});
+</script>
+</body>
+</html>

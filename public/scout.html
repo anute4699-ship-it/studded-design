@@ -1,0 +1,1025 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Venture Scout</title>
+<script src="/site.js"></script>
+
+<style>
+  body{margin:0;background:#BDBEBA}
+  :root{
+    --plate:#BDBEBA; --plate-lo:#9C9D99; --paper:#EFEFEC;
+    --ink:#16191C; --ink-soft:#5C6167;
+    --yellow:#F5CD30; --yellow-lo:#C4A11E;
+    --moss:#4FA35E; --moss-lo:#2F7440;
+    --red:#C4281C; --green:#3E9B4F; --amber:#D98324;
+    --disp:'Big Shoulders Display','Oswald','Arial Narrow',sans-serif;
+    --body:'Public Sans',ui-sans-serif,system-ui,sans-serif;
+    --mono:'DM Mono',ui-monospace,'SFMono-Regular',monospace;
+  }
+  #rvs *{box-sizing:border-box;margin:0;padding:0}
+  #rvs{
+    font-family:var(--body);color:var(--ink);background-color:var(--plate);
+    background-image:
+      radial-gradient(circle at 50% 45%, rgba(255,255,255,.55) 0 22%, rgba(255,255,255,0) 23%),
+      radial-gradient(circle at 50% 58%, rgba(0,0,0,.13) 0 24%, rgba(0,0,0,0) 25%);
+    background-size:34px 34px;padding:22px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  }
+  #rvs .panel{background:var(--paper);border:1.5px solid var(--ink);box-shadow:5px 5px 0 rgba(22,25,28,.22)}
+  #rvs .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  #rvs .hidden{display:none!important}
+
+  #rvs .mast{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 18px;justify-content:space-between;border-bottom:3px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
+  #rvs .mast h1{font-family:var(--disp);font-weight:900;font-size:clamp(32px,6vw,54px);line-height:.86;text-transform:uppercase}
+  #rvs .mast h1 em{font-style:normal;display:block;font-size:.5em;font-weight:700;letter-spacing:.03em;color:var(--ink-soft)}
+  #rvs .stampline{text-align:right;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:.06em;line-height:1.75}
+  #rvs .stampline b{color:var(--ink);font-weight:500}
+
+  #rvs .intake{padding:16px 16px 14px;margin-bottom:14px}
+  #rvs label.big{display:block;font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:.02em;text-transform:uppercase;margin-bottom:8px}
+  #rvs textarea{width:100%;min-height:112px;resize:vertical;font-family:var(--body);font-size:15px;line-height:1.55;color:var(--ink);background:#fff;border:1.5px solid var(--ink);padding:11px 12px}
+  #rvs textarea::placeholder{color:#9AA0A6}
+  #rvs textarea:focus-visible,#rvs button:focus-visible,#rvs input:focus-visible,#rvs a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+  #rvs .hint{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);margin-top:7px}
+  #rvs .intake-foot{display:flex;flex-wrap:wrap;gap:11px;align-items:center;justify-content:space-between;margin-top:11px}
+  #rvs .chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  #rvs .chip{font-family:var(--mono);font-size:11px;background:transparent;border:1.5px dashed var(--ink-soft);color:var(--ink-soft);padding:5px 9px;cursor:pointer}
+  #rvs .chip:hover{border-style:solid;color:var(--ink);border-color:var(--ink)}
+  #rvs .toggle{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--ink-soft);cursor:pointer}
+  #rvs .toggle input{width:15px;height:15px;accent-color:var(--red);cursor:pointer}
+  #rvs .brick{position:relative;font-family:var(--disp);font-weight:900;font-size:21px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--red);border:1.5px solid var(--ink);border-bottom-width:7px;padding:13px 24px 10px;cursor:pointer;transition:transform .08s ease,border-bottom-width .08s ease}
+  #rvs .brick::before,#rvs .brick::after{content:"";position:absolute;top:-6px;width:15px;height:9px;border:1.5px solid var(--ink);border-bottom:none;background:linear-gradient(#E4614F,#B8241A);border-radius:4px 4px 0 0}
+  #rvs .brick::before{left:20px} #rvs .brick::after{right:20px}
+  #rvs .brick:active{transform:translateY(4px);border-bottom-width:3px}
+  #rvs .brick[disabled]{background:var(--plate-lo);color:var(--paper);cursor:progress}
+  #rvs .brick[disabled]::before,#rvs .brick[disabled]::after{background:var(--plate-lo)}
+
+  #rvs .stage{padding:11px 14px;margin-bottom:14px}
+  #rvs .stage p{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink)}
+  #rvs .stage p span{color:var(--ink-soft)}
+  #rvs .track{height:7px;background:var(--plate-lo);border:1.5px solid var(--ink);margin-top:8px;overflow:hidden}
+  #rvs .track i{display:block;height:100%;background:repeating-linear-gradient(45deg,var(--yellow) 0 7px,var(--yellow-lo) 7px 14px);width:0;transition:width .5s ease}
+
+  #rvs .failbox{border-left:5px solid var(--red);padding:10px 12px;font-size:13.5px}
+  #rvs .failbox b{display:block;font-family:var(--disp);font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+  #rvs .failbox span{display:block;font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);margin:5px 0 9px;word-break:break-word;line-height:1.5}
+  #rvs .retry{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;padding:6px 11px;cursor:pointer}
+  #rvs .retry:hover{background:var(--red)}
+
+  #rvs .loop{padding:14px 16px;margin-bottom:14px}
+  #rvs .limbs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:12px}
+  #rvs .limb{position:relative;border:1.5px solid var(--ink);background:#fff;padding:13px 12px 12px;margin-top:8px}
+  #rvs .limb::before,#rvs .limb::after{content:"";position:absolute;top:-7px;width:16px;height:9px;border:1.5px solid var(--ink);border-bottom:none;border-radius:4px 4px 0 0;background:#DEDEDA}
+  #rvs .limb::before{left:16px} #rvs .limb::after{left:40px}
+  #rvs .limb h3{font-family:var(--disp);font-weight:900;font-size:23px;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+  #rvs .limb .st{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:2px 6px;border:1.5px solid var(--ink);display:inline-block;margin:7px 0 8px}
+  #rvs .limb .st.solid{background:var(--green);color:#fff}
+  #rvs .limb .st.weak{background:var(--yellow)}
+  #rvs .limb .st.missing{background:var(--red);color:#fff}
+  #rvs .limb p{font-size:13.5px}
+  #rvs .limb.gap{border-style:dashed;background:rgba(196,40,28,.06)}
+
+  #rvs .orig{padding:14px 16px;margin-bottom:14px}
+  #rvs .orig-top{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;justify-content:space-between}
+  #rvs .badge{font-family:var(--disp);font-weight:900;font-size:34px;line-height:1;border:1.5px solid var(--ink);padding:5px 11px 2px;background:var(--yellow)}
+  #rvs .badge small{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.1em;display:block;text-transform:uppercase}
+  #rvs .orig p.v{font-size:15px;font-weight:600;flex:1;min-width:200px}
+  #rvs .metahit{margin-top:11px;padding:9px 11px;border:1.5px solid var(--ink);background:rgba(217,131,36,.14);font-size:13.5px}
+  #rvs .metahit.flag{background:rgba(196,40,28,.13);border-width:2px}
+  #rvs .metahit b{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;display:block;color:#8A5210}
+  #rvs .metahit.flag b{color:var(--red)}
+  #rvs .metahit em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--ink-soft);display:block;margin-top:5px}
+  #rvs .cols{list-style:none;margin-top:11px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+  #rvs .cols li{border-left:4px solid var(--ink);padding-left:9px;font-size:13.5px}
+  #rvs .cols li b{display:block;font-weight:700}
+  #rvs .cols li a{color:var(--ink);text-decoration:underline}
+  #rvs .cols li span{color:var(--ink-soft);font-size:12.5px}
+
+  #rvs .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  #rvs .card{display:flex;flex-direction:column;padding:0;overflow:hidden}
+  #rvs .card-hd{display:flex;align-items:baseline;gap:8px;padding:9px 14px;border-bottom:1.5px solid var(--ink);background:var(--ink);color:var(--paper)}
+  #rvs .card-hd .tag{font-family:var(--mono);font-size:11px;color:var(--yellow)}
+  #rvs .card-hd h2{font-family:var(--disp);font-weight:800;font-size:19px;letter-spacing:.05em;text-transform:uppercase}
+  #rvs .card-bd{padding:14px;display:flex;flex-direction:column;gap:14px;flex:1}
+  #rvs .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid rgba(22,25,28,.18);padding-bottom:4px;margin-bottom:7px}
+  #rvs .empty{padding:26px 14px;text-align:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+
+  #rvs .score-row{display:flex;align-items:flex-end;gap:9px}
+  #rvs .score{font-family:var(--disp);font-weight:900;font-size:66px;line-height:.78;letter-spacing:-.02em}
+  #rvs .score-max{font-family:var(--mono);font-size:12px;color:var(--ink-soft);padding-bottom:6px}
+  #rvs .studs{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:11px}
+  #rvs .stud{aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 28%,#D6D7D3 0%,#AEAFAB 55%,#8D8E8A 100%);box-shadow:inset 0 2px 3px rgba(0,0,0,.4)}
+  #rvs .stud.on{background:radial-gradient(circle at 34% 28%,#FFF3C4 0%,var(--yellow) 48%,var(--yellow-lo) 100%);box-shadow:inset 0 -2px 3px rgba(0,0,0,.32),0 1px 0 rgba(255,255,255,.6)}
+  #rvs .stud.on.money{background:radial-gradient(circle at 34% 28%,#CDEFD4 0%,var(--moss) 48%,var(--moss-lo) 100%)}
+  #rvs .verdict-line{font-size:14px;font-weight:600;margin-top:9px}
+  #rvs .hook{display:flex;gap:8px;font-size:14px;align-items:flex-start}
+  #rvs .hook span:first-child{font-family:var(--mono);font-size:11px;color:var(--ink-soft);padding-top:3px;flex:none}
+  #rvs ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+
+  #rvs .lane{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:inline-block;padding:2px 7px;margin-bottom:6px;border:1.5px solid var(--ink)}
+  #rvs .lane.primary{background:var(--ink);color:var(--yellow)}
+  #rvs .lane.secondary{background:transparent;color:var(--ink-soft)}
+  #rvs .engage{font-size:13.5px;background:rgba(79,163,94,.15);border-left:4px solid var(--moss);padding:8px 10px}
+  #rvs .leak{border-left:4px solid var(--red);padding-left:9px}
+  #rvs .leak h4{font-size:14px;font-weight:800}
+  #rvs .leak p{font-size:13px;color:var(--ink-soft)}
+  #rvs .leak p.fix{color:var(--ink)}
+  #rvs .leak p.fix b{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--green);text-transform:uppercase}
+  #rvs .iap{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:1px dotted var(--plate-lo);padding-bottom:7px}
+  #rvs .iap h4{font-size:14px;font-weight:700}
+  #rvs .iap small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft)}
+  #rvs .iap .px{font-family:var(--mono);font-size:14px;font-weight:500;white-space:nowrap;background:var(--yellow);border:1.5px solid var(--ink);padding:2px 6px}
+
+  #rvs .quit{border-left:4px solid var(--red);padding-left:10px}
+  #rvs .quit .when{font-family:var(--disp);font-weight:900;font-size:21px;letter-spacing:.04em;text-transform:uppercase;color:var(--red);line-height:1}
+  #rvs .quit p{font-size:13.5px;margin-top:3px}
+
+  #rvs .vband{margin-top:14px;padding:16px;display:grid;grid-template-columns:.9fr 1.5fr;gap:22px}
+  #rvs .stamp{align-self:flex-start;transform:rotate(-5deg);font-family:var(--disp);font-weight:900;font-size:clamp(32px,4.6vw,46px);line-height:.9;letter-spacing:.07em;padding:6px 18px 3px;border:5px double currentColor;margin:6px 0 8px;display:inline-block}
+  #rvs .stamp.build{color:var(--green)} #rvs .stamp.burn{color:var(--red)} #rvs .stamp.rework{color:var(--amber)}
+  #rvs .feas{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-soft);text-transform:uppercase}
+  #rvs .reason{font-size:14.5px;margin-top:7px}
+  #rvs .task{display:flex;gap:9px;align-items:flex-start;cursor:pointer;font-size:13.5px}
+  #rvs .box{flex:none;width:16px;height:16px;margin-top:3px;border:1.5px solid var(--ink);background:#fff;display:grid;place-items:center;font-size:13px;line-height:1;color:var(--green);font-weight:800}
+  #rvs .task.done{color:var(--ink-soft);text-decoration:line-through}
+  #rvs .task .hrs{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-soft);flex:none;padding-top:3px;width:44px}
+
+  #rvs .band{margin-top:14px;padding:16px}
+  #rvs .band-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;margin-top:11px}
+  #rvs .gl{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;padding:7px 0;border-top:1px solid rgba(22,25,28,.16)}
+  #rvs .gl .mark{flex:none;font-family:var(--disp);font-weight:900;font-size:19px;line-height:1;width:24px;height:24px;display:grid;place-items:center;color:#fff;border:1.5px solid var(--ink)}
+  #rvs .gl .mark.add{background:var(--green)} #rvs .gl .mark.cut{background:var(--red)}
+  #rvs .aura{background:var(--ink);color:var(--paper);padding:13px}
+  #rvs .aura h3{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;color:var(--yellow);margin:3px 0 6px}
+  #rvs .aura p{font-size:13.5px;color:#D8D9D5}
+  #rvs .aura .eyebrow{color:var(--yellow)}
+
+  /* launch kit */
+  #rvs .kit{margin-top:14px;padding:14px 16px}
+  #rvs .kit-hd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:8px}
+  #rvs .kit-lead{font-size:13.5px;margin-top:10px;color:var(--ink-soft)}
+  #rvs .pblock{border:1.5px solid var(--ink);background:#fff;margin-top:11px}
+  #rvs .pblock .ph{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--ink);color:var(--paper);padding:7px 11px}
+  #rvs .pblock .ph h4{font-family:var(--disp);font-weight:800;font-size:17px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+  #rvs .pblock .ph .for{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);display:block;margin-top:2px}
+  #rvs .pblock pre{font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre-wrap;padding:11px;margin:0}
+  #rvs .cp{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--yellow);border:1.5px solid var(--ink);padding:5px 10px;cursor:pointer;flex:none}
+  #rvs .cp.done{background:var(--green);color:#fff}
+  #rvs .tools{margin-top:18px;border-top:1.5px solid var(--ink);padding-top:12px}
+  #rvs .tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;margin-top:10px}
+  #rvs .tgrid h5{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);border-bottom:1px solid rgba(22,25,28,.22);padding-bottom:4px}
+  #rvs .tgrid a{display:block;font-size:13.5px;font-weight:700;color:var(--ink);text-decoration:none;margin-top:7px}
+  #rvs .tgrid a:hover{text-decoration:underline}
+  #rvs .tgrid a i{font-style:normal;display:block;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--ink-soft)}
+  #rvs .tnote{font-family:var(--mono);font-size:10px;color:var(--ink-soft);margin-top:12px;line-height:1.6}
+
+  /* shortlist shelf */
+  #rvs .shelf{margin-top:14px;padding:14px 16px}
+  #rvs .shelf-hd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:8px}
+  #rvs .shelf-tools{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  #rvs .shelf .clear{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;background:none;border:0;border-bottom:1px solid var(--plate-lo);color:var(--ink-soft);cursor:pointer;padding:0 0 1px}
+  #rvs .shelf .clear:hover{color:var(--red);border-color:var(--red)}
+  #rvs .grp{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:13px 0 3px}
+  #rvs .row{display:grid;grid-template-columns:26px 1fr 78px 54px 54px 46px 24px;gap:10px;align-items:center;padding:7px 4px;border-bottom:1px solid rgba(22,25,28,.14)}
+  #rvs .row:hover{background:rgba(22,25,28,.06)}
+  #rvs .row.pin-on{background:rgba(245,205,48,.2)}
+  #rvs .row button{border:0;background:transparent;cursor:pointer;font-family:inherit;color:var(--ink);padding:2px;font-size:14px;line-height:1}
+  #rvs .row .name{font-weight:700;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+  #rvs .row .name:hover{text-decoration:underline}
+  #rvs .row .del{color:var(--ink-soft)} #rvs .row .del:hover{color:var(--red)}
+  #rvs .vd{font-family:var(--disp);font-weight:900;font-size:13px;letter-spacing:.08em;text-align:center;border:1.5px solid currentColor;padding:2px 0 0}
+  #rvs .vd.build{color:var(--green)} #rvs .vd.burn{color:var(--red)} #rvs .vd.rework{color:var(--amber)}
+  #rvs .mv{font-family:var(--mono);font-size:13px;text-align:right}
+  #rvs .mv i{font-style:normal;font-size:9px;letter-spacing:.1em;color:var(--ink-soft);display:block;text-transform:uppercase}
+  #rvs .when{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);text-align:right}
+  #rvs .shelf .empty{padding:22px 0}
+
+  #rvs .scrim{position:fixed;inset:0;background:rgba(22,25,28,.72);display:grid;place-items:center;padding:20px;z-index:60;overflow:auto}
+  #rvs .modal{max-width:680px;width:100%;background:var(--paper);border:1.5px solid var(--ink);box-shadow:8px 8px 0 rgba(0,0,0,.4)}
+  #rvs .modal header{background:var(--amber);border-bottom:1.5px solid var(--ink);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #rvs .modal header h2{font-family:var(--disp);font-weight:900;font-size:26px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+  #rvs .modal header p{font-size:13px;margin-top:2px}
+  #rvs .modal .x{background:none;border:1.5px solid var(--ink);font-family:var(--disp);font-size:18px;width:30px;height:30px;cursor:pointer;flex:none;line-height:1}
+  #rvs .modal .bd{padding:16px;display:flex;flex-direction:column;gap:12px}
+  #rvs .modal footer{border-top:1.5px solid var(--ink);padding:11px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  #rvs .modal footer span{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);letter-spacing:.05em}
+  #rvs .asis{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:transparent;border:1.5px solid var(--ink);color:var(--ink);padding:7px 12px;cursor:pointer}
+  #rvs .asis:hover{background:var(--ink);color:var(--paper)}
+  #rvs .asis[disabled]{opacity:.45;cursor:progress;background:transparent;color:var(--ink)}
+  #rvs .rolls{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);text-align:right}
+  #rvs .pivot{border:1.5px solid var(--ink);background:#fff;padding:12px}
+  #rvs .pivot h4{font-family:var(--disp);font-weight:800;font-size:21px;letter-spacing:.03em;text-transform:uppercase;line-height:1}
+  #rvs .pivot p{font-size:13.5px;margin-top:5px}
+  #rvs .pivot p.un{color:var(--ink-soft)}
+  #rvs .pivot p.un b{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}
+  #rvs .pivot button{margin-top:9px;font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;background:var(--ink);color:var(--paper);border:0;padding:7px 12px;cursor:pointer}
+  #rvs .pivot button:hover{background:var(--red)}
+
+  #rvs .foot{margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:#6E736F;text-align:center;line-height:1.75}
+  #rvs .drop{animation:drop .34s cubic-bezier(.2,.9,.3,1.15) both}
+  @keyframes drop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+  @media (max-width:900px){
+    #rvs .cards,#rvs .limbs{grid-template-columns:1fr}
+    #rvs .vband,#rvs .band-grid{grid-template-columns:1fr}
+    #rvs .stampline{text-align:left}
+  }
+  @media (max-width:760px){
+    #rvs .row{grid-template-columns:24px 1fr 74px 48px 24px}
+    #rvs .row .mv.mon,#rvs .row .when{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){#rvs *,#rvs *::before,#rvs *::after{animation:none!important;transition:none!important}}
+</style>
+
+<script>
+/* Studded Design: window.storage backed by the local server (data/kv.json). */
+window.storage={
+  get:function(k){return fetch('/api/kv/'+encodeURIComponent(k)).then(function(r){return r.json();});},
+  set:function(k,v){return fetch('/api/kv/'+encodeURIComponent(k),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({value:v})}).then(function(r){return r.json();});}
+};
+</script>
+</head>
+<body>
+<nav style="font:500 12px DM Mono,monospace;padding:8px 22px;background:#16191C"><a href="/" style="color:#F5CD30;text-decoration:none">&larr; Studded Design</a> <span id="omniBadge" style="color:#9AA0A6;margin-left:12px">checking AI…</span></nav>
+<div id="rvs">
+  <header class="mast">
+    <h1>Roblox Venture Scout<em>Idea audit desk</em></h1>
+    <div class="stampline">
+      FILE <b id="fileno">RVS-0000</b><br>
+      CODENAME <b id="codename">—</b><br>
+      STATUS <b id="status">Awaiting intake</b><br>
+      SHORTLIST <b id="listCount">empty</b>
+    </div>
+  </header>
+
+  <section class="panel intake">
+    <label class="big" for="idea">Paste your messy game idea here</label>
+    <textarea id="idea" placeholder="Type it however it comes out. Two words is enough — thin ideas get scaffolded into a blueprint before they get scored."></textarea>
+    <p class="hint hidden" id="hint"></p>
+    <div class="intake-foot">
+      <div class="chips">
+        <button class="chip" data-fill="flappy">Load: 3D flappy bird</button>
+        <button class="chip" data-fill="thin">Load: a pizza game</button>
+        <label class="toggle" for="origToggle"><input type="checkbox" id="origToggle" checked>Check roblox.com (+3–8s)</label>
+      </div>
+      <button class="brick" id="run">Run venture audit</button>
+    </div>
+    <p class="hint" style="margin-top:8px">Running an audit sends your idea to our AI provider, and a few keywords to Roblox's public game search. <a href="/privacy">Privacy</a></p>
+    <div style="display:none">
+    </div>
+  </section>
+
+  <section class="panel stage hidden" id="stage" aria-live="polite">
+    <p id="stageText"></p>
+    <div class="track"><i id="stageBar"></i></div>
+  </section>
+
+  <section class="panel loop hidden" id="loop">
+    <div class="eyebrow">Deconstructed loop — the three limbs every Roblox game stands on</div>
+    <div class="limbs" id="limbs"></div>
+  </section>
+
+  <section class="panel orig hidden" id="orig">
+    <div class="eyebrow">Originality check</div>
+    <div id="origBody"></div>
+  </section>
+
+  <div class="cards">
+    <article class="panel card">
+      <div class="card-hd"><span class="tag">A</span><h2>Viral velocity</h2></div>
+      <div class="card-bd" id="cardA"><div class="empty">No audit on file</div></div>
+    </article>
+    <article class="panel card">
+      <div class="card-hd"><span class="tag">B</span><h2>Monetization radius</h2></div>
+      <div class="card-bd" id="cardB"><div class="empty">No audit on file</div></div>
+    </article>
+    <article class="panel card">
+      <div class="card-hd"><span class="tag">C</span><h2>The roast</h2></div>
+      <div class="card-bd" id="cardC"><div class="empty">No audit on file</div></div>
+    </article>
+  </div>
+
+  <section class="panel vband hidden" id="vband">
+    <div>
+      <div class="eyebrow">Solo-dev verdict</div>
+      <div id="verdictBody"></div>
+    </div>
+    <div>
+      <div class="eyebrow">72-hour MVP — tick as you build</div>
+      <ul id="mvp" style="margin-top:10px"></ul>
+    </div>
+  </section>
+
+  <section class="panel band hidden" id="band">
+    <div class="eyebrow">The greenlight — what successful games in this space tend to have (not a guarantee)</div>
+    <div class="band-grid">
+      <div id="glList"></div>
+      <div class="aura">
+        <div class="eyebrow">Aura injection — one trending mechanic</div>
+        <h3 id="auraName"></h3>
+        <p id="auraWhy"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel kit hidden" id="kit">
+    <div class="kit-hd">
+      <div class="eyebrow">Launch kit — prompts for the tools that make the assets</div>
+      <button class="asis" id="kitRun">Generate launch prompts</button>
+    </div>
+    <p class="kit-lead" id="kitLead"></p>
+    <div id="kitBody"></div>
+    <div class="tools hidden" id="kitTools">
+      <div class="eyebrow">Where to run them — free and cheap</div>
+      <div class="tgrid">
+        <div>
+          <h5>Thumbnail &amp; icon art</h5>
+          <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer">Google Gemini<i>Has a free tier for images</i></a>
+          <a href="https://ideogram.ai" target="_blank" rel="noopener noreferrer">Ideogram<i>Free tier; good at text in images</i></a>
+          <a href="https://leonardo.ai" target="_blank" rel="noopener noreferrer">Leonardo.ai<i>Free daily tokens, lots of style models</i></a>
+          <a href="https://www.recraft.ai" target="_blank" rel="noopener noreferrer">Recraft<i>Design-grade output, accurate text</i></a>
+        </div>
+        <div>
+          <h5>Cropping &amp; text overlay</h5>
+          <a href="https://www.canva.com" target="_blank" rel="noopener noreferrer">Canva<i>Free tier — 16:9 crop, big text, export</i></a>
+          <a href="https://www.photopea.com" target="_blank" rel="noopener noreferrer">Photopea<i>Free browser Photoshop, no signup</i></a>
+        </div>
+        <div>
+          <h5>Title, description, TikTok script</h5>
+          <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude<i>Free tier</i></a>
+          <a href="https://chatgpt.com" target="_blank" rel="noopener noreferrer">ChatGPT<i>Free tier</i></a>
+          <a href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek<i>Free chat, very cheap API</i></a>
+        </div>
+        <div>
+          <h5>Luau scripting &amp; build spec</h5>
+          <a href="https://create.roblox.com/docs/assistant" target="_blank" rel="noopener noreferrer">Roblox Studio Assistant<i>Free, built into Studio, knows the API</i></a>
+          <a href="https://claude.ai" target="_blank" rel="noopener noreferrer">Claude<i>Free tier — good on Luau</i></a>
+          <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer">CapCut<i>Free — cutting the TikTok clip</i></a>
+        </div>
+      </div>
+      <p class="tnote">Free tiers change often — check the current limits before you plan around one. Roblox Studio's Assistant is the only one here that is free with no separate signup.</p>
+    </div>
+  </section>
+
+  <section class="panel shelf" id="shelf">
+    <div class="shelf-hd">
+      <div class="eyebrow">Session shortlist</div>
+      <div class="shelf-tools">
+        <label class="toggle" for="buildOnly"><input type="checkbox" id="buildOnly">Build verdicts only</label>
+        <button class="clear hidden" id="clearRail">Clear unpinned</button>
+      </div>
+    </div>
+    <div id="shelfBody"></div>
+  </section>
+
+  <p class="foot">
+    Collisions come from a live roblox.com search. Saturation comes from a curated list held in code, not a live Discover feed.<br>
+    Scores are automated AI opinions, not advice and not a guarantee of success or earnings. Check anything you'd build on against your own Creator Dashboard.
+  </p>
+
+  <div class="scrim hidden" id="scrim" role="dialog" aria-modal="true" aria-labelledby="pvTitle">
+    <div class="modal">
+      <header>
+        <div><h2 id="pvTitle">Predictive scaffolding</h2><p id="pvWhy"></p></div>
+        <button class="x" id="pvClose" aria-label="Close">✕</button>
+      </header>
+      <div class="bd" id="pvBody"></div>
+      <footer>
+        <span>Each pivot is one change, not a different game.</span>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="asis" id="pvRoll">Roll three more</button>
+          <button class="asis" id="pvAsIs">Audit mine as-is</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=function(id){return document.getElementById(id);};
+  const idea=$('idea'), runBtn=$('run'), statusEl=$('status');
+  const MODEL="claude-sonnet-4-6";
+  const AUDIT_TEMP=0.3;   /* scores should be stable run-to-run */
+  const PIVOT_TEMP=1;     /* pivots should not be */
+
+  const SAMPLES={
+    flappy:"3d flappy bird on roblox, you flap thru rings in a tunnel, one hit u die, score goes up. want wing skins u can buy and a 2x score pass and revives. trying to make robux off it, im solo dev",
+    thin:"a pizza game"
+  };
+
+  /* CURATED saturation list — not a live feed. Edit as metas shift. */
+  const META_REVIEWED="curated list, review it yourself before trusting it";
+  const META=[
+    {name:"Aura / RNG rolling",lvl:"Extreme",flagship:true,keys:["aura","rng","roll","rolling","luck","rarity","mythic","gacha","odds"]},
+    {name:"Brainrot collect & steal",lvl:"Extreme",flagship:true,keys:["brainrot","steal","stealing","steal a","collect base"]},
+    {name:"Simulator / rebirth-multiplier",lvl:"Extreme",keys:["simulator","rebirth","multiplier","clicker","incremental"]},
+    {name:"Pet & egg hatching",lvl:"Extreme",keys:["pet","egg","hatch","hatching"]},
+    {name:"Obby / tower climb",lvl:"Extreme",keys:["obby","tower","climb","parkour","jump map"]},
+    {name:"Tycoon (drop-and-collect)",lvl:"High",keys:["tycoon","dropper","conveyor"]},
+    {name:"Anime battlegrounds",lvl:"High",keys:["anime","battleground","fighting","punch","one piece","dragon"]},
+    {name:"Corridor horror / Doors-like",lvl:"High",keys:["horror","doors","entity","hallway","monster chase"]},
+    {name:"Life roleplay sim",lvl:"High",keys:["roleplay","brookhaven","city life","adopt","family"]},
+    {name:"Idle grow / farm",lvl:"High",keys:["grow","garden","farm","plant","harvest"]},
+    {name:"Fishing / mining loop",lvl:"High",keys:["fishing","mining","mine ore","dig"]},
+    {name:"Find the X badge hunt",lvl:"High",keys:["find the","badge hunt","morphs"]},
+    {name:"Tower defense",lvl:"Moderate",keys:["tower defense","wave defense"]},
+    {name:"Endless runner / flappy",lvl:"Moderate",keys:["flappy","endless","runner","infinite","one hit"]},
+    {name:"Escape room / prison",lvl:"Moderate",keys:["escape","prison","jailbreak"]},
+    {name:"Hide and seek / tag",lvl:"Moderate",keys:["hide and seek","seeker","hider"]}
+  ];
+  function metaMatch(t){
+    const s=' '+String(t).toLowerCase()+' ';
+    return META.filter(function(m){return m.keys.some(function(k){return s.indexOf(k)!==-1;});}).slice(0,4);
+  }
+  const LOOP_SIGNAL=/(earn|coin|cash|money|robux|currency|upgrade|buy|unlock|level|rebirth|multiplier|score|leaderboard|trade|equip|skin|cosmetic|pet|boss|round|team|win|lose|die|collect|craft|quest|rank)/i;
+  function thinInput(t){
+    const w=t.trim().split(/\s+/).filter(Boolean);
+    if(w.length<12)return true;
+    if(w.length<26&&!LOOP_SIGNAL.test(t))return true;
+    return false;
+  }
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function arr(a){return Array.isArray(a)?a:[];}
+  function clamp(n){n=parseInt(n,10);return isNaN(n)?0:Math.max(0,Math.min(100,n));}
+  function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+  function safeURL(u){
+    try{const p=new URL(String(u));
+      if(p.protocol!=='https:')return null;
+      if(!/(^|\.)roblox\.com$/.test(p.hostname))return null;
+      return p.href;
+    }catch(e){return null;}
+  }
+  function tryParse(s){try{return JSON.parse(s);}catch(e){return null;}}
+
+  /* Tolerant JSON reader. Handles fences, chatter around the object, and —
+     the big one — responses truncated by max_tokens, by closing whatever
+     brackets were still open at the last safe cut point. A truncated array
+     just comes back shorter, which every renderer already tolerates. */
+  function extractJSON(raw){
+    const t=String(raw).replace(/```json/gi,'').replace(/```/g,'').trim();
+    const start=t.indexOf('{'); if(start===-1)return null;
+    const s=t.slice(start);
+    const direct=tryParse(s); if(direct)return direct;
+    let ins=false,escd=false; const stack=[], cuts=[];
+    for(let i=0;i<s.length;i++){
+      const c=s[i];
+      if(escd){escd=false;continue;}
+      if(c==='\\'){escd=true;continue;}
+      if(c==='"'){ins=!ins; if(!ins)cuts.push({i:i,st:stack.slice()}); continue;}
+      if(ins)continue;
+      if(c==='{'||c==='['){stack.push(c==='{'?'}':']');}
+      else if(c==='}'||c===']'){
+        stack.pop();
+        if(!stack.length){const whole=tryParse(s.slice(0,i+1)); if(whole)return whole;}
+        cuts.push({i:i,st:stack.slice()});
+      }
+    }
+    for(let k=cuts.length-1,n=0;k>=0&&n<300;k--,n++){
+      const c=cuts[k];
+      const o=tryParse(s.slice(0,c.i+1)+c.st.slice().reverse().join(''));
+      if(o)return o;
+    }
+    return null;
+  }
+
+  function errMsg(e){
+    if(!e)return 'Unknown error';
+    if(e.status===429)return 'Rate limited (429) — too many requests in a row. Wait a minute.';
+    if(e.status===400)return 'Rejected by the API (400). '+(e.detail||'');
+    return e.message||String(e);
+  }
+
+  /* Retries on 429 / 5xx / network with backoff. Does not retry 4xx. */
+  async function ask(payload,tries){
+    tries=tries||3;
+    let lastErr=null;
+    for(let a=0;a<tries;a++){
+      if(a)await sleep(900*Math.pow(2,a-1));
+      try{
+        const res=await fetch("/api/messages",{
+          method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)
+        });
+        if(!res.ok){
+          let body=''; try{body=await res.text();}catch(e){}
+          const err=new Error('HTTP '+res.status);
+          err.status=res.status; err.detail=body.slice(0,160);
+          err.retryable=(res.status===429||res.status>=500);
+          throw err;
+        }
+        const data=await res.json();
+        const text=(data.content||[]).map(function(b){return b.type==='text'?b.text:'';}).filter(Boolean).join('\n');
+        const parsed=extractJSON(text);
+        if(!parsed){const e2=new Error('Response was cut off or unreadable');e2.retryable=true;throw e2;}
+        return parsed;
+      }catch(e){
+        lastErr=e;
+        if(e.retryable===false)break;
+      }
+    }
+    throw lastErr||new Error('Request failed');
+  }
+
+  const VOICE="You are Roblox Venture Scout, a senior Roblox VC and monetization lead reviewing ideas from solo developers in 2026. "
+    +"You are brutal, specific and unpadded, like a real deal memo. Never flatter. Give concrete mechanics and Robux figures, never vague advice. "
+    +"You weight engagement-based payouts ABOVE traditional game passes: session length, repeat visits and Premium payouts are the primary revenue read, "
+    +"and direct purchases are secondary. You know the platform: 16:9 thumbnails driving search placement, D1 retention gating discovery, UGC items, "
+    +"and current trend shapes — RNG and aura rolling, brainrot collect-and-steal loops, social flex and status display, lobby-to-round formats. "
+    +"Never suggest anything breaking Roblox community standards or any deceptive or manipulative purchase flow aimed at children. "
+    +"Respond with one JSON object and nothing else: no markdown, no code fences, no commentary.";
+
+  let rot=null;
+  function stage(main,detail,pct){
+    $('stage').classList.remove('hidden');
+    $('stageText').innerHTML=esc(main)+(detail?' <span>'+esc(detail)+'</span>':'');
+    $('stageBar').style.width=pct+'%';
+  }
+  function rotate(lines,pct){
+    let i=0;clearInterval(rot);
+    rot=setInterval(function(){i=(i+1)%lines.length;stage(lines[i],'',pct+i*2);},2400);
+  }
+  function stopRotate(){clearInterval(rot);rot=null;}
+  function hint(msg){
+    const h=$('hint');
+    if(!msg){h.classList.add('hidden');return;}
+    h.textContent=msg;h.classList.remove('hidden');
+  }
+  function failHTML(label,e){
+    return '<div class="failbox"><b>'+esc(label)+' failed</b><span>'+esc(errMsg(e))+'</span>'
+      +'<button class="retry">Retry just this</button></div>';
+  }
+
+  /* ---- persistence ---- */
+  const KEY='rvs:shortlist';
+  const CAP=40;
+  let shortlist=[], buildOnly=false;
+  async function loadList(){
+    if(!window.storage){drawShelf();return;}
+    try{const r=await window.storage.get(KEY,false);if(r&&r.value)shortlist=JSON.parse(r.value)||[];}
+    catch(e){shortlist=[];}
+    drawShelf();
+  }
+  async function saveList(){
+    drawShelf();
+    if(!window.storage)return;
+    try{await window.storage.set(KEY,JSON.stringify(shortlist),false);}
+    catch(e){console.warn('shortlist not persisted',e);}
+  }
+  function verdictKind(s){
+    const t=String(s||'').toUpperCase();
+    return t.indexOf('BURN')!==-1?'burn':(t.indexOf('BUILD')!==-1?'build':'rework');
+  }
+  function rowHTML(e){
+    const k=verdictKind(e.status);
+    return '<div class="row'+(e.pinned?' pin-on':'')+'" data-id="'+esc(e.id)+'">'
+      +'<button data-act="pin" title="'+(e.pinned?'Unpin':'Pin')+'" aria-label="'+(e.pinned?'Unpin':'Pin')+'">'+(e.pinned?'★':'☆')+'</button>'
+      +'<button class="name" data-act="open" title="Reopen this audit">'+esc(e.codename)+'</button>'
+      +'<span class="vd '+k+'">'+k.toUpperCase()+'</span>'
+      +'<span class="mv vel">'+clamp(e.score)+'<i>Viral</i></span>'
+      +'<span class="mv mon">'+clamp(e.money)+'<i>Money</i></span>'
+      +'<span class="when">'+esc(e.time||'')+'</span>'
+      +'<button class="del" data-act="del" title="Remove" aria-label="Remove">✕</button></div>';
+  }
+  function drawShelf(){
+    const list=shortlist.filter(function(e){return !buildOnly||verdictKind(e.status)==='build';})
+      .sort(function(a,b){return b.at-a.at;});
+    const pinned=list.filter(function(e){return e.pinned;});
+    const loose=list.filter(function(e){return !e.pinned;});
+    let html='';
+    if(!shortlist.length)html='<div class="empty">Nothing audited yet — pinned ideas survive a reload</div>';
+    else if(!list.length)html='<div class="empty">No build verdicts in this session yet</div>';
+    else{
+      if(pinned.length)html+='<div class="grp">Pinned — '+pinned.length+'</div>'+pinned.map(rowHTML).join('');
+      if(loose.length)html+='<div class="grp">This session — '+loose.length+'</div>'+loose.map(rowHTML).join('');
+    }
+    $('shelfBody').innerHTML=html;
+    $('clearRail').classList.toggle('hidden',!shortlist.some(function(e){return !e.pinned;}));
+    const np=shortlist.filter(function(e){return e.pinned;}).length;
+    $('listCount').textContent=shortlist.length?(np+' pinned / '+shortlist.length+' run'):'empty';
+  }
+  $('shelfBody').addEventListener('click',function(ev){
+    const btn=ev.target.closest('button');if(!btn)return;
+    const row=btn.closest('.row');if(!row)return;
+    const entry=shortlist.filter(function(e){return e.id===row.dataset.id;})[0];
+    if(!entry)return;
+    const act=btn.dataset.act;
+    if(act==='pin'){entry.pinned=!entry.pinned;saveList();}
+    else if(act==='del'){shortlist=shortlist.filter(function(e){return e.id!==row.dataset.id;});saveList();}
+    else{
+      idea.value=entry.idea;hint('');restore(entry.data);
+      statusEl.textContent='Reopened — '+entry.codename;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  });
+  $('buildOnly').addEventListener('change',function(e){buildOnly=e.target.checked;drawShelf();});
+  $('clearRail').addEventListener('click',function(){
+    shortlist=shortlist.filter(function(e){return e.pinned;});saveList();
+  });
+  function remember(entry){
+    shortlist.push(entry);
+    const pinned=shortlist.filter(function(e){return e.pinned;});
+    const loose=shortlist.filter(function(e){return !e.pinned;}).sort(function(a,b){return b.at-a.at;}).slice(0,CAP);
+    shortlist=pinned.concat(loose);saveList();
+  }
+
+  /* ---- renderers ---- */
+  function gauge(score,money){
+    let s='<div class="score-row"><div class="score">'+clamp(score)+'</div><div class="score-max">/ 100</div></div><div class="studs">';
+    const lit=Math.round(clamp(score)/5);
+    for(let i=0;i<20;i++)s+='<div class="stud'+(i<lit?' on'+(money?' money':''):'')+'"></div>';
+    return s+'</div>';
+  }
+  function renderOriginality(o,hits){
+    const flag=hits.some(function(h){return h.flagship;});
+    const cols=arr(o.collisions);
+    $('origBody').innerHTML=
+      '<div class="orig-top" style="margin-top:8px">'
+      +'<div class="badge">'+clamp(o.originalityScore)+'<small>Originality</small></div>'
+      +'<p class="v">'+esc(o.verdict)+'</p></div>'
+      +(hits.length
+        ? '<div class="metahit'+(flag?' flag':'')+'"><b>Saturated-meta list — '+hits.length+' hit'+(hits.length>1?'s':'')+(flag?' · flagship niche':'')+'</b>'
+          +hits.map(function(h){return esc(h.name)+' ('+h.lvl+')';}).join(' · ')+'<em>'+META_REVIEWED+'</em></div>'
+        : '<div class="metahit"><b>Saturated-meta list — no hits</b>Nothing on the built-in list matched.<em>'+META_REVIEWED+'</em></div>')
+      +'<ul class="cols">'
+      +(cols.length?cols.map(function(c){
+          const u=safeURL(c.url);
+          const t=u?'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(c.name)+'</a>':esc(c.name);
+          return '<li><b>'+t+'</b><span>'+esc(c.note)+'</span></li>';
+        }).join(''):'<li><span>No close matches surfaced on roblox.com.</span></li>')
+      +'</ul>';
+    const el=$('orig');el.classList.remove('hidden');el.classList.add('drop');
+  }
+  function renderLoop(L){
+    if(!L)return;
+    $('limbs').innerHTML=[['earn','Earn'],['upgrade','Upgrade'],['flex','Flex']].map(function(p){
+      const l=L[p[0]]||{};
+      const st=String(l.status||'WEAK').toUpperCase();
+      const cls=st.indexOf('MISS')!==-1?'missing':(st.indexOf('SOLID')!==-1?'solid':'weak');
+      return '<div class="limb '+(cls==='missing'?'gap':'')+'"><h3>'+p[1]+'</h3>'
+        +'<span class="st '+cls+'">'+esc(st)+'</span><p>'+esc(l.mechanic)+'</p></div>';
+    }).join('');
+    const el=$('loop');el.classList.remove('hidden');el.classList.add('drop');
+  }
+  function renderPlayer(p){
+    const v=p.viralVelocity||{};
+    $('cardA').innerHTML='<div>'+gauge(v.score,false)+'<p class="verdict-line">'+esc(v.verdict)+'</p></div>'
+      +'<div><div class="sub">TikTok hooks</div><ul>'
+      +arr(v.tiktokHooks).map(function(h,i){return '<li class="hook"><span>0'+(i+1)+'</span><span>'+esc(h)+'</span></li>';}).join('')
+      +'</ul></div>';
+    $('cardC').innerHTML='<div><div class="sub">Where they quit — first 24 hours</div><ul>'
+      +arr(p.roast).map(function(r){return '<li class="quit"><div class="when">'+esc(r.moment)+'</div><p>'+esc(r.reason)+'</p></li>';}).join('')
+      +'</ul></div>';
+    renderLoop(p.deconstructedLoop);
+  }
+  function renderMoney(b){
+    const m=b.monetizationRadius||b||{};
+    $('cardB').innerHTML='<div>'+gauge(m.score,true)+'</div>'
+      +'<div><span class="lane primary">Engagement lane — primary</span><p class="engage">'+esc(m.engagementRead)+'</p></div>'
+      +'<div><div class="sub">Leak points</div><ul>'
+      +arr(m.leakPoints).map(function(l){return '<li class="leak"><h4>'+esc(l.where)+'</h4><p>'+esc(l.why)+'</p><p class="fix"><b>Fix</b> '+esc(l.fix)+'</p></li>';}).join('')
+      +'</ul></div>'
+      +'<div><span class="lane secondary">Purchase lane — secondary</span><ul style="margin-top:6px">'
+      +arr(m.iapSuggestions).map(function(p){return '<li class="iap"><div><h4>'+esc(p.name)+'</h4><small>'+esc(p.type)+' — '+esc(p.why)+'</small></div><div class="px">'+esc(p.price)+'</div></li>';}).join('')
+      +'</ul></div>';
+  }
+  function renderVerdict(b){
+    const s=b.soloDevVerdict||{};
+    const kind=verdictKind(s.status);
+    $('verdictBody').innerHTML='<div class="stamp '+kind+'">'+kind.toUpperCase()+'</div>'
+      +'<div class="feas">Feasibility '+clamp(s.feasibility)+' / 100</div>'
+      +'<p class="reason">'+esc(s.reasoning)+'</p>';
+    $('mvp').innerHTML=arr(s.mvpChecklist).map(function(t){
+      return '<li class="task"><span class="box"></span><span class="hrs">'+esc(t.hours)+'</span><span>'+esc(t.task)+'</span></li>';
+    }).join('');
+    const vb=$('vband');vb.classList.remove('hidden');vb.classList.add('drop');
+    $('glList').innerHTML=arr(b.greenlight).map(function(g){
+      const cut=String(g.action||'').toUpperCase().indexOf('CUT')!==-1;
+      return '<div class="gl"><span class="mark '+(cut?'cut':'add')+'">'+(cut?'−':'+')+'</span><span>'+esc(g.item)+'</span></div>';
+    }).join('');
+    const a=b.auraInjection||{};
+    $('auraName').textContent=a.mechanic||'—';
+    $('auraWhy').textContent=a.why||'';
+    const bd=$('band');bd.classList.remove('hidden');bd.classList.add('drop');
+    showKit(kind);
+  }
+  $('mvp').addEventListener('click',function(ev){
+    const li=ev.target.closest('.task');if(!li)return;
+    li.querySelector('.box').textContent=li.classList.toggle('done')?'✓':'';
+  });
+
+  function restore(d){
+    if(!d)return;
+    const hits=metaMatch(d.idea||idea.value);
+    if(d.origin)renderOriginality(d.origin,hits); else $('orig').classList.add('hidden');
+    if(d.player)renderPlayer(d.player);
+    const money=d.money||d.business, verd=d.verdict||d.business;   /* older entries stored one blob */
+    if(money)renderMoney(money);
+    if(verd&&verd.soloDevVerdict)renderVerdict(verd);
+    if(d.codename)$('codename').textContent=d.codename;
+    last.text=d.idea||'';last.origin=d.origin||null;last.player=d.player||null;
+    last.money=money||null;last.verdict=verd||null;
+    $('kitBody').innerHTML='';$('kitTools').classList.add('hidden');
+  }
+
+  /* ---- launch kit ---- */
+  function showKit(kind){
+    $('kit').classList.remove('hidden');
+    $('kitLead').textContent = kind==='burn'
+      ? 'Verdict says burn — the kit is here anyway if you are building it. Five prompts, ready to paste into the tools below.'
+      : 'Five prompts built from this audit — thumbnail, icon, page copy, TikTok hook and a build spec — ready to paste into the tools below.';
+  }
+  function copyText(t,btn){
+    const done=function(){btn.textContent='Copied';btn.classList.add('done');setTimeout(function(){btn.textContent='Copy';btn.classList.remove('done');},1600);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(done,function(){fallback();});
+    }else fallback();
+    function fallback(){
+      const ta=document.createElement('textarea');
+      ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');done();}catch(e){btn.textContent='Select it';}
+      document.body.removeChild(ta);
+    }
+  }
+  async function buildKit(){
+    const btn=$('kitRun');
+    btn.disabled=true;btn.textContent='Writing prompts…';
+    $('kitBody').innerHTML='<div class="empty">Writing prompts…</div>';
+    const p=last.player||{}, v=(last.verdict||{}).soloDevVerdict||{}, a=(last.verdict||{}).auraInjection||{};
+    const L=p.deconstructedLoop||{};
+    const brief='Game: '+(last.codename||'untitled')+'\nIdea: '+last.text
+      +'\nLoop — earn: '+((L.earn||{}).mechanic||'?')+' | upgrade: '+((L.upgrade||{}).mechanic||'?')+' | flex: '+((L.flex||{}).mechanic||'?')
+      +'\nTrending mechanic to lean on: '+(a.mechanic||'none')
+      +'\nStrongest TikTok hook from the audit: '+(arr((p.viralVelocity||{}).tiktokHooks)[0]||'none');
+    try{
+      const r=await ask({model:MODEL,max_tokens:1000,temperature:0.6,system:VOICE,messages:[{role:"user",content:
+        'Write 5 ready-to-paste prompts for this Roblox game. Each prompt is addressed TO another AI tool and must be specific to this game — '
+        +'bake in the actual mechanics, not placeholders.\n\n'+brief+'\n\n'
+        +'The 5, in order:\n'
+        +'1. Thumbnail — for an image AI. 16:9, one clear focal character, high contrast, nothing important in the bottom strip (player-count UI covers it), no small text.\n'
+        +'2. Game icon — for an image AI. Square, must read at 150px, one subject, bold silhouette.\n'
+        +'3. Title and description — for a text AI. Ask for 8 title options under 50 chars and a description written for Roblox search, with the genre keywords players actually type.\n'
+        +'4. TikTok hook — for a text AI. Ask for 3 scripts, 15 seconds each, first frame described, built on the hook above.\n'
+        +'5. Build spec — for a coding AI writing Luau in Roblox Studio. Ask for the system list in build order with the DataStore and RemoteEvent structure named.\n\n'
+        +'Return JSON:\n{"prompts":[{"job":"short label","tool":"Image AI or Text AI or Coding AI","prompt":"the full prompt, 45-90 words, written as an instruction to that tool"}]}\n'
+        +'Exactly 5. JSON only.'}]});
+      const list=arr(r.prompts);
+      $('kitBody').innerHTML=list.map(function(x,i){
+        return '<div class="pblock"><div class="ph"><div><h4>'+esc(x.job)+'</h4><span class="for">For a '+esc(x.tool)+'</span></div>'
+          +'<button class="cp" data-i="'+i+'">Copy</button></div><pre>'+esc(x.prompt)+'</pre></div>';
+      }).join('');
+      $('kitBody').querySelectorAll('.cp').forEach(function(b){
+        b.addEventListener('click',function(){copyText(list[parseInt(b.dataset.i,10)].prompt,b);});
+      });
+      $('kitTools').classList.remove('hidden');
+      btn.textContent='Rewrite prompts';
+    }catch(e){
+      $('kitBody').innerHTML=failHTML('Launch kit',e);
+      $('kitBody').querySelector('.retry').addEventListener('click',buildKit);
+      btn.textContent='Generate launch prompts';
+    }finally{ btn.disabled=false; }
+  }
+  $('kitRun').addEventListener('click',buildKit);
+
+  /* ---- scaffolding modal ---- */
+  let lastFocus=null, pivotCtx={text:'',seen:[],rolls:0};
+  function closeModal(){$('scrim').classList.add('hidden');if(lastFocus)lastFocus.focus();}
+  $('pvClose').addEventListener('click',closeModal);
+  $('scrim').addEventListener('click',function(e){if(e.target===$('scrim'))closeModal();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!$('scrim').classList.contains('hidden'))closeModal();
+  });
+  $('pvAsIs').addEventListener('click',function(){closeModal();runAudit(true);});
+  $('pvRoll').addEventListener('click',function(){if(pivotCtx.text)drawPivots();});
+
+  async function drawPivots(){
+    const text=pivotCtx.text, hits=metaMatch(text);
+    $('pvBody').innerHTML='<div class="empty">'+(pivotCtx.rolls?'Rolling again…':'Drafting blueprints…')+'</div>';
+    $('pvRoll').disabled=true;
+    try{
+      const avoid=pivotCtx.seen.length?'\nAlready shown — do not repeat or reskin these: '+pivotCtx.seen.join(' / ')+'.\n':'';
+      const r=await ask({model:MODEL,max_tokens:1000,temperature:PIVOT_TEMP,system:VOICE,messages:[{role:"user",content:
+        'This Roblox idea is too thin to ship as-is:\n"""\n'+text+'\n"""\n'
+        +(hits.length?'\nDo not lean on these already-saturated niches: '+hits.map(function(h){return h.name;}).join(', ')+'.\n':'')
+        +avoid
+        +'\nInvent exactly 3 pivots. Each is ONE change that thickens the loop into a shippable 2026 blueprint, not a different game.\n'
+        +'Do not reach for the obvious genre answer, and do not make all three variations of the same move. '
+        +'Push for combinations nobody has tried: a mechanic from a genre this never pairs with, a social layer that changes who the player performs for, '
+        +'a session format that changes what a run means. Weird is welcome as long as the loop holds.\n'
+        +'Each rewritten version must contain a clear Earn, Upgrade and Flex step. Name each like a real Roblox title someone would click.\n'
+        +'Return JSON:\n{"pivots":[{"name":"max 5 words","change":"max 22 words","unlocks":"max 14 words",'
+        +'"rewritten":"max 50 words, the idea rewritten with the pivot applied, naming its earn, upgrade and flex steps"}]}\nJSON only.'}]});
+      const list=arr(r.pivots);
+      list.forEach(function(p){if(p&&p.name)pivotCtx.seen.push(p.name);});
+      pivotCtx.rolls++;
+      $('pvBody').innerHTML=(list.length?list.map(function(p,i){
+        return '<div class="pivot"><h4>'+esc(p.name)+'</h4><p>'+esc(p.change)+'</p>'
+          +'<p class="un"><b>Unlocks</b> '+esc(p.unlocks)+'</p>'
+          +'<button data-i="'+i+'">Audit this version →</button></div>';
+      }).join(''):'<div class="empty">No pivots came back</div>')
+        +(pivotCtx.rolls>1?'<p class="rolls">Roll '+pivotCtx.rolls+' · '+pivotCtx.seen.length+' seen, none repeated</p>':'');
+      $('pvBody').querySelectorAll('.pivot button').forEach(function(b){
+        b.addEventListener('click',function(){
+          const p=list[parseInt(b.dataset.i,10)];
+          idea.value=p.rewritten||(text+' — pivot: '+p.change);
+          hint('');closeModal();runAudit(true);
+        });
+      });
+    }catch(e){
+      $('pvBody').innerHTML=failHTML('Blueprints',e);
+      $('pvBody').querySelector('.retry').addEventListener('click',drawPivots);
+    }finally{$('pvRoll').disabled=false;}
+  }
+  function openPivots(text,why,preflight){
+    lastFocus=document.activeElement;
+    pivotCtx={text:text,seen:[],rolls:0};
+    $('pvWhy').textContent=why;
+    $('pvAsIs').textContent=preflight?'Audit mine as-is':'Keep my version';
+    $('scrim').classList.remove('hidden');
+    $('pvClose').focus();
+    drawPivots();
+  }
+
+  /* ---- the audit, as four independent pieces ---- */
+  const last={text:'',codename:'',origin:null,player:null,money:null,verdict:null};
+  const origCache=new Map();
+
+  function ctxLine(){
+    return last.origin
+      ? 'Originality context: score '+clamp(last.origin.originalityScore)+'/100. Closest live games: '
+        +arr(last.origin.collisions).map(function(c){return c.name;}).join(', ')+'.'
+      : 'No originality search was run.';
+  }
+
+  async function pieceOrigin(){
+    const text=last.text, hits=metaMatch(text);
+    const ck=text.toLowerCase().replace(/\s+/g,' ');
+    if(origCache.has(ck)){ last.origin=origCache.get(ck); renderOriginality(last.origin,hits); return; }
+    const body='Search roblox.com for existing Roblox games that collide with this idea, then judge how original it is.\n\n'
+      +'IDEA:\n"""\n'+text+'\n"""\n\n'
+      +'Curated saturated-meta list flagged: '+(hits.length?hits.map(function(h){return h.name+' ('+h.lvl+')';}).join(', '):'nothing')+'.\n'
+      +'Weight Aura/RNG rolling and brainrot collect-and-steal as the most saturated niches on the platform.\n\n'
+      +'Return JSON:\n{"codename":"max 4 words","collisions":[{"name":"the real game name","note":"max 12 words on how close it is","url":"its roblox.com URL"}],'
+      +'"originalityScore":0-100,"verdict":"max 18 words, blunt"}\n'
+      +'Up to 3 collisions. Only use roblox.com URLs you actually saw in results — never invent one. JSON only.';
+    let r;
+    try{
+      r=await ask({model:MODEL,max_tokens:1000,system:VOICE,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        messages:[{role:"user",content:body}]},2);
+    }catch(e){
+      /* Search unavailable — fall back to a judgement-only pass rather than
+         losing the whole panel. */
+      r=await ask({model:MODEL,max_tokens:1000,temperature:AUDIT_TEMP,system:VOICE,
+        messages:[{role:"user",content:body.replace('Search roblox.com for','From memory, name')
+          +'\nNOTE: no live search available, so mark uncertainty in the verdict and leave url empty.'}]},2);
+      r.verdict=(r.verdict||'')+' (no live search — from model memory)';
+    }
+    last.origin=r; origCache.set(ck,r);
+    if(r.codename){last.codename=r.codename;$('codename').textContent=r.codename;}
+    renderOriginality(r,hits);
+  }
+
+  async function piecePlayer(){
+    const r=await ask({model:MODEL,max_tokens:1000,temperature:AUDIT_TEMP,system:VOICE,messages:[{role:"user",content:
+      'Audit the player-side of this Roblox idea.\n\nIDEA:\n"""\n'+last.text+'\n"""\n'+ctxLine()+'\n\n'
+      +'Return JSON:\n{"deconstructedLoop":{'
+      +'"earn":{"mechanic":"max 11 words","status":"SOLID or WEAK or MISSING"},'
+      +'"upgrade":{"mechanic":"max 11 words","status":"SOLID or WEAK or MISSING"},'
+      +'"flex":{"mechanic":"max 11 words on how other players see it","status":"SOLID or WEAK or MISSING"}},'
+      +'"viralVelocity":{"score":0-100,"verdict":"max 12 words","tiktokHooks":["exactly 3, each max 15 words, a filmable clip"]},'
+      +'"roast":[{"moment":"max 4 words, a timestamp inside the first 24 hours","reason":"max 22 words, brutal and specific"}]}\n'
+      +'roast: exactly 3, all inside the first 24 hours, earliest first. JSON only.'}]});
+    last.player=r; renderPlayer(r);
+  }
+
+  async function pieceMoney(){
+    const r=await ask({model:MODEL,max_tokens:1000,temperature:AUDIT_TEMP,system:VOICE,messages:[{role:"user",content:
+      'Score the monetization radius of this Roblox idea.\n\nIDEA:\n"""\n'+last.text+'\n"""\n'+ctxLine()+'\n\n'
+      +'Score engagement-first: roughly 60% session length, repeat visits and Premium payout potential, 40% direct purchases. '
+      +'A long-session game with no shop scores higher than a short game with a big shop.\n\n'
+      +'Return JSON:\n{"monetizationRadius":{"score":0-100,'
+      +'"engagementRead":"max 26 words on session length, repeat visits and Premium payouts",'
+      +'"leakPoints":[{"where":"max 5 words","why":"max 18 words","fix":"max 14 words"}],'
+      +'"iapSuggestions":[{"name":"max 5 words","type":"Game Pass or Dev Product","price":"R$ number","why":"max 10 words"}]}}\n'
+      +'Exactly 3 leakPoints and 4 iapSuggestions. JSON only.'}]});
+    last.money=r; renderMoney(r);
+  }
+
+  async function pieceVerdict(){
+    const r=await ask({model:MODEL,max_tokens:1000,temperature:AUDIT_TEMP,system:VOICE,messages:[{role:"user",content:
+      'Give the solo-dev verdict on this Roblox idea.\n\nIDEA:\n"""\n'+last.text+'\n"""\n'+ctxLine()+'\n\n'
+      +'Return JSON:\n{"auraInjection":{"mechanic":"max 5 words, a 2026 trending mechanic","why":"max 26 words on why it makes THIS game trend"},'
+      +'"greenlight":[{"action":"ADD or CUT","item":"max 16 words, specific and testable"}],'
+      +'"soloDevVerdict":{"status":"BUILD or BURN or REWORK","feasibility":0-100,"reasoning":"max 28 words",'
+      +'"mvpChecklist":[{"hours":"e.g. 0-8h","task":"max 12 words"}]}}\n'
+      +'Exactly 3 greenlight items and 6 mvpChecklist items in build order covering 72 solo hours. JSON only.'}]});
+    last.verdict=r; renderVerdict(r);
+  }
+
+  /* Runs one piece; a failure lands in that piece's own panel with a retry
+     button and never touches the others. */
+  async function piece(fn,label,panelId){
+    try{ await fn(); return true; }
+    catch(e){
+      console.error(label,e);
+      const box=$(panelId);
+      box.innerHTML=failHTML(label,e);
+      box.classList.remove('hidden');
+      const btn=box.querySelector('.retry');
+      btn.addEventListener('click',function(){
+        box.innerHTML='<div class="empty">Retrying…</div>';
+        piece(fn,label,panelId);
+      });
+      return false;
+    }
+  }
+
+  function isThin(){
+    const v=clamp(((last.player||{}).viralVelocity||{}).score);
+    const st=String(((last.verdict||{}).soloDevVerdict||{}).status||'').toUpperCase();
+    const L=(last.player||{}).deconstructedLoop||{};
+    const missing=['earn','upgrade','flex'].filter(function(k){
+      return String((L[k]||{}).status||'').toUpperCase().indexOf('MISS')!==-1;
+    }).length;
+    return v<45||st.indexOf('REWORK')!==-1||st.indexOf('BURN')!==-1||missing>=2;
+  }
+
+  async function runAudit(skipScaffold){
+    const text=idea.value.trim();
+    if(!text){hint('Give the desk something to work with — even two words will do.');idea.focus();return;}
+    hint('');
+    if(!skipScaffold&&thinInput(text)){
+      statusEl.textContent='Scaffolding';
+      openPivots(text,'That is a seed, not a loop. Three blueprints that give it an earn, an upgrade and a flex.',true);
+      return;
+    }
+
+    last.text=text;last.codename='';last.origin=null;last.player=null;last.money=null;last.verdict=null;
+    runBtn.disabled=true;runBtn.textContent='Auditing…';
+    statusEl.textContent='Running';
+    ['cardA','cardB','cardC'].forEach(function(id){$(id).innerHTML='<div class="empty">Scoring…</div>';});
+    ['loop','orig','vband','band','kit'].forEach(function(id){$(id).classList.add('hidden');});
+    $('kitBody').innerHTML='';$('kitTools').classList.add('hidden');$('kitRun').textContent='Generate launch prompts';
+
+    stage('Reading the idea…','',8);
+    if($('origToggle').checked){
+      rotate(['Searching roblox.com for collisions…','Reading the top results…','Measuring distance from what already ships…'],14);
+      await piece(pieceOrigin,'Originality check','origBody');
+      stopRotate();
+    }
+
+    stage('Scoring the loop, the money and the verdict…','three passes in parallel',62);
+    const results=await Promise.allSettled([
+      piece(piecePlayer,'Viral velocity','cardA'),
+      piece(pieceMoney,'Monetization radius','cardB'),
+      piece(pieceVerdict,'Solo-dev verdict','verdictBody')
+    ]);
+    if(!last.player)$('cardC').innerHTML='<div class="empty">No roast — velocity pass failed</div>';
+    if(!last.verdict)$('vband').classList.remove('hidden');
+
+    const got=results.filter(function(r){return r.status==='fulfilled'&&r.value;}).length;
+    stopRotate();
+    stage(got===3?'Audit complete':'Audit finished with '+(3-got)+' panel(s) failed','',100);
+    setTimeout(function(){$('stage').classList.add('hidden');},1200);
+    statusEl.textContent=got===3?'Audit complete':'Partial — retry the failed panels';
+    $('fileno').textContent='RVS-'+String(Math.floor(1000+Math.random()*8999));
+    runBtn.disabled=false;runBtn.textContent='Run venture audit';
+
+    if(last.player||last.verdict){
+      const code=last.codename||'Untitled idea';
+      $('codename').textContent=code;
+      remember({
+        id:String(Date.now()),codename:code,idea:text,at:Date.now(),pinned:false,
+        score:clamp(((last.player||{}).viralVelocity||{}).score),
+        money:clamp(((last.money||{}).monetizationRadius||{}).score),
+        status:String(((last.verdict||{}).soloDevVerdict||{}).status||'REWORK'),
+        time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+        data:{codename:code,idea:text,origin:last.origin,player:last.player,money:last.money,verdict:last.verdict}
+      });
+    }
+    if(last.player&&last.verdict&&isThin()){
+      openPivots(text,'It scored thin. Three pivots that thicken the loop without starting over.',false);
+    }
+  }
+
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click',function(){idea.value=SAMPLES[c.dataset.fill];hint('');idea.focus();});
+  });
+  runBtn.addEventListener('click',function(){runAudit(false);});
+  idea.addEventListener('keydown',function(e){
+    if((e.metaKey||e.ctrlKey)&&e.key==='Enter')runAudit(false);
+  });
+  loadList();
+})();
+</script>
+<script>
+fetch('/api/health').then(function(r){return r.json();}).then(function(h){
+  var b=document.getElementById('omniBadge');
+  b.textContent=h.ai?('AI online · '+h.model):'AI is offline';
+  b.style.color=h.ai?'#4FA35E':'#E05A4A';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studded Design Legal</title>
+<link rel="stylesheet" href="/page.css">
+<script src="/vendor/marked.min.js"></script>
+<script src="/site.js"></script>
+</head>
+<body>
+<div class="top"><a href="/">&larr; Studded Design</a></div>
+<main id="main"><p class="muted">Loading…</p></main>
+<script>
+(function(){
+  var doc=location.pathname.slice(1);
+  var titles={privacy:'Privacy Policy',terms:'Terms of Service',refunds:'Refund Policy',cookies:'Cookie Policy'};
+  document.title='Studded Design '+(titles[doc]||'Legal');
+  fetch('/api/legal/'+doc).then(function(r){return r.json();}).then(function(d){
+    var m=document.getElementById('main');
+    m.innerHTML=(d.draft?'<div class="draft" role="note">Draft: the business details on this page have not been filled in yet.</div>':'')+marked.parse(d.markdown);
+  });
+})();
+</script>
+</body>
+</html>

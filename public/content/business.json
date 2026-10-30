@@ -1,0 +1,51 @@
+{
+  "productName": "Studded Design",
+  "legalName": "[YOUR LEGAL NAME OR COMPANY NAME]",
+  "address": "[STREET, CITY, STATE/REGION, POSTCODE, COUNTRY]",
+  "supportEmail": "[support@yourdomain.com]",
+  "privacyEmail": "[privacy@yourdomain.com]",
+  "governingLaw": "[STATE AND COUNTRY WHOSE LAW APPLIES]",
+  "paymentProvider": "[PAYMENT PROVIDER, e.g. Stripe]",
+  "hostingProvider": "Netlify, Inc. (Netlify Functions and Netlify Blobs)",
+  "aiProvider": "OpenAI, through the Netlify AI Gateway (gpt-4.1-mini model)",
+  "effectiveDate": "2026-10-29",
+  "minAge": 13,
+  "refundDays": 14,
+  "deletionDays": 30,
+  "currency": "USD",
+  "taxNote": "Prices shown are the full price. Where the law requires sales tax or VAT, it is shown as its own line before you pay. There are no other fees.",
+  "plans": [
+    {
+      "name": "Single model",
+      "price": null,
+      "period": "one-off",
+      "includes": [
+        "One studded prop or character built from your brief",
+        "GLB + Roblox FBX files",
+        "One round of changes"
+      ]
+    },
+    {
+      "name": "Rigged character",
+      "price": null,
+      "period": "one-off",
+      "includes": [
+        "A studded character with a rig",
+        "Up to 3 animations (idle, walk + one more)",
+        "Roblox import files"
+      ]
+    },
+    {
+      "name": "Studio monthly",
+      "price": null,
+      "period": "per month",
+      "includes": [
+        "Venture Scout audits",
+        "Unlimited saved briefs",
+        "AI part-table drafts"
+      ],
+      "cancelNote": "Cancel any time, in one step, by emailing support or from your payment receipt. You keep access until the end of the month you paid for."
+    }
+  ],
+  "website": "https://studdeddesign.com"
+}

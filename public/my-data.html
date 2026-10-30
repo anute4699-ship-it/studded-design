@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studded Design My Data</title>
+<link rel="stylesheet" href="/page.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<div class="top"><a href="/">&larr; Studded Design</a></div>
+<main id="main">
+  <h1>My data</h1>
+  <p>Everything Studded Design has stored for you, and a button to delete all of it.</p>
+
+  <h2>Saved on our server</h2>
+  <div id="list"><p class="muted">Loading…</p></div>
+
+  <h2>Saved in this browser</h2>
+  <p>Your age confirmation, terms acceptance and cookie choice. <button class="btn" id="clearLocal" type="button">Clear browser data</button></p>
+
+  <h2>Delete all my data</h2>
+  <p>This permanently deletes every brief, every uploaded reference and your Venture Scout shortlist. It can't be undone.</p>
+  <p><label for="confirm">Type <b>DELETE</b> to confirm:</label><br>
+    <input type="text" id="confirm" autocomplete="off" aria-describedby="delMsg">
+    <button class="btn danger" id="delAll" type="button" disabled>Delete all my data</button></p>
+  <p id="delMsg" aria-live="polite"></p>
+  <p class="muted" id="email"></p>
+</main>
+<script>
+(function(){
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  function load(){
+    Promise.all([fetch('/api/briefs').then(function(r){return r.json();}),fetch('/api/kv/rvs%3Ashortlist').then(function(r){return r.json();})]).then(function(x){
+      var briefs=x[0],sl=x[1].value?JSON.parse(x[1].value):[];
+      document.getElementById('list').innerHTML='<table><thead><tr><th>What</th><th>Count</th></tr></thead><tbody>'
+        +'<tr><td>Model briefs</td><td>'+briefs.length+'</td></tr>'
+        +'<tr><td>Uploaded reference files</td><td>'+briefs.reduce(function(a,b){return a+b.refs;},0)+'</td></tr>'
+        +'<tr><td>Venture Scout shortlist entries</td><td>'+sl.length+'</td></tr></tbody></table>'
+        +(briefs.length?'<p>Briefs: '+briefs.map(function(b){return esc(b.name);}).join(', ')+'</p>':'');
+    });
+  }
+  load();
+  fetch('/api/business').then(function(r){return r.json();}).then(function(b){
+    document.getElementById('email').innerHTML='Prefer to ask? Email <a href="mailto:'+esc(b.privacyEmail)+'">'+esc(b.privacyEmail)+'</a> to access, correct, export or delete your data. We reply within '+esc(b.deletionDays)+' days.';
+  });
+  var input=document.getElementById('confirm'),btn=document.getElementById('delAll');
+  input.addEventListener('input',function(){btn.disabled=input.value.trim()!=='DELETE';});
+  btn.addEventListener('click',function(){
+    btn.disabled=true;
+    fetch('/api/delete-all',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({confirm:'DELETE'})})
+      .then(function(r){return r.json();}).then(function(d){
+        document.getElementById('delMsg').innerHTML=d.ok?'<span class="ok">Deleted. '+d.briefsDeleted+' brief(s) and your shortlist are gone.</span>':'<span class="bad">'+esc((d.error&&d.error.message)||'Failed')+'</span>';
+        input.value='';load();
+      });
+  });
+  document.getElementById('clearLocal').addEventListener('click',function(){
+    ['ss:consent','ss:age','ssd:tab'].forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+    location.reload();
+  });
+})();
+</script>
+</body>
+</html>

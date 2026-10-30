@@ -1,0 +1,29 @@
+# Studded Design on Netlify: static pages from /public, the API in netlify/functions,
+# the studio password gate in netlify/edge-functions/gate.ts.
+[build]
+  publish = "public"
+  command = "echo 'static site: no build step'"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Legal pages share one template that reads the page name from the URL.
+[[redirects]]
+  from = "/privacy"
+  to = "/legal.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/legal.html"
+  status = 200
+
+[[redirects]]
+  from = "/refunds"
+  to = "/legal.html"
+  status = 200
+
+[[redirects]]
+  from = "/cookies"
+  to = "/legal.html"
+  status = 200

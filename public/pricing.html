@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studded Design Pricing</title>
+<link rel="stylesheet" href="/page.css">
+<script src="/site.js"></script>
+</head>
+<body>
+<div class="top"><a href="/">&larr; Studded Design</a></div>
+<main id="main">
+  <h1>Pricing</h1>
+  <p>The price you see is the price you pay. Nothing is added at checkout except tax where the law requires it, and that is always shown before you pay.</p>
+  <div class="plans" id="plans"></div>
+  <p class="muted" id="tax"></p>
+  <p>Refunds: see the <a href="/refunds">Refund Policy</a>. Subscriptions can be cancelled at any time, in one step.</p>
+</main>
+<script>
+(function(){
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m];});}
+  fetch('/api/business').then(function(r){return r.json();}).then(function(b){
+    var fmt=new Intl.NumberFormat(undefined,{style:'currency',currency:b.currency||'USD'});
+    document.getElementById('plans').innerHTML=(b.plans||[]).map(function(p){
+      var price=p.price==null?'<span class="muted" style="font-size:20px">Price not set yet</span>':esc(fmt.format(p.price));
+      return '<section class="plan"><h2 style="margin-top:0;font-size:22px">'+esc(p.name)+'</h2><div class="price">'+price+'</div>'
+        +'<div class="muted">'+esc(p.period)+'</div><ul>'+(p.includes||[]).map(function(i){return '<li>'+esc(i)+'</li>';}).join('')+'</ul>'
+        +(p.cancelNote?'<p class="muted" style="font-size:13.5px">'+esc(p.cancelNote)+'</p>':'')+'</section>';
+    }).join('');
+    document.getElementById('tax').textContent=b.taxNote||'';
+  });
+})();
+</script>
+</body>
+</html>
